@@ -2,13 +2,17 @@ from flask import Flask, render_template, request, jsonify
 import sqlite3
 import cv2
 import numpy as np
-from pyzbar.pyzbar import decode
 from datetime import datetime, time, timedelta
 import re
 
 app = Flask(__name__)
 
 DATABASE = "attendance.db"
+
+# OpenCV's built-in QR reader — no external system library needed
+# (unlike pyzbar, which requires the zbar shared library to be
+# installed at the OS level).
+qr_detector = cv2.QRCodeDetector()
 
 # =========================================================
 # ATTENDANCE CONFIG
@@ -253,18 +257,14 @@ def decode_qr():
     if error:
         return error
 
-    qr_codes = decode(image)
+    qr_data, points, _ = qr_detector.detectAndDecode(image)
+    qr_data = (qr_data or "").strip()
 
-    if not qr_codes:
+    if not qr_data:
         return jsonify({
             "success": False,
             "message": "No QR code detected."
         })
-
-    qr_data = qr_codes[0].data.decode(
-        "utf-8",
-        errors="ignore"
-    ).strip()
 
     student_id = extract_student_id(qr_data)
 
@@ -384,18 +384,14 @@ def scan():
     if error:
         return error
 
-    qr_codes = decode(image)
+    qr_data, points, _ = qr_detector.detectAndDecode(image)
+    qr_data = (qr_data or "").strip()
 
-    if not qr_codes:
+    if not qr_data:
         return jsonify({
             "success": False,
             "message": "No QR code detected."
         })
-
-    qr_data = qr_codes[0].data.decode(
-        "utf-8",
-        errors="ignore"
-    ).strip()
 
     student_id = extract_student_id(qr_data)
 
@@ -619,4 +615,12 @@ def delete_student(student_id):
 # RUN APPLICATION
 # =========================================================
 
-init_db()
+if __name__ == "__main__":
+
+    init_db()
+
+    app.run(
+        debug=True,
+        host="127.0.0.1",
+        port=5000
+    )
