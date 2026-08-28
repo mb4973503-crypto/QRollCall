@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>QRollCall — Dashboard</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}" />
+</head>
+<body>
+
+  <nav>
+    <div class="brand">QRollCall</div>
+    <div>
+      <a href="/">Register</a>
+      <a href="/scanner">Scan Attendance</a>
+      <a href="/dashboard">Dashboard</a>
+    </div>
+  </nav>
+
+  <div class="container">
+    <h1>Dashboard</h1>
+    <p class="subtitle">Today: {{ today }}</p>
+
+    <div class="stats-row">
+      <div class="stat-box">
+        <div class="value">{{ total_students }}</div>
+        <div class="label">Total Students</div>
+      </div>
+      <div class="stat-box">
+        <div class="value">{{ present_today }}</div>
+        <div class="label">Present/Late Today</div>
+      </div>
+    </div>
+
+    <div class="card">
+      <h2 style="margin-top:0;">Attendance Log</h2>
+
+      <div class="actions-row">
+        <button class="btn-secondary" id="mark-absentees-btn">Mark Today's Absentees</button>
+      </div>
+
+      <div id="dashboard-status" class="status-message"></div>
+
+      <div class="table-wrapper">
+        <table>
+          <thead>
+            <tr>
+              <th>Student ID</th>
+              <th>Name</th>
+              <th>Course</th>
+              <th>Year</th>
+              <th>Date</th>
+              <th>Time</th>
+              <th>Status</th>
+              <th>Override</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for row in attendance %}
+            <tr>
+              <td>{{ row.student_id }}</td>
+              <td>{{ row.name }}</td>
+              <td>{{ row.course }}</td>
+              <td>{{ row.year_level }}</td>
+              <td>{{ row.date }}</td>
+              <td>{{ row.time }}</td>
+              <td>
+                {% if row.status == "Present" %}
+                  <span class="badge badge-present">Present</span>
+                {% elif row.status == "Late" %}
+                  <span class="badge badge-late">Late</span>
+                {% else %}
+                  <span class="badge badge-absent">Absent</span>
+                {% endif %}
+              </td>
+              <td>
+                <select class="override-select"
+                        data-student-id="{{ row.student_id }}"
+                        data-date="{{ row.date }}">
+                  <option value="Present" {% if row.status == "Present" %}selected{% endif %}>Present</option>
+                  <option value="Late" {% if row.status == "Late" %}selected{% endif %}>Late</option>
+                  <option value="Absent" {% if row.status == "Absent" %}selected{% endif %}>Absent</option>
+                </select>
+              </td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="card">
+      <h2 style="margin-top:0;">Registered Students</h2>
+
+      <div class="table-wrapper">
+        <table>
+          <thead>
+            <tr>
+              <th>Student ID</th>
+              <th>Name</th>
+              <th>Course</th>
+              <th>Year</th>
+              <th></th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for student in students %}
+            <tr>
+              <td>{{ student.student_id }}</td>
+              <td>{{ student.name }}</td>
+              <td>{{ student.course }}</td>
+              <td>{{ student.year_level }}</td>
+              <td>
+                <button class="btn-danger btn-small delete-btn" data-student-id="{{ student.student_id }}">
+                  Delete
+                </button>
+              </td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <script src="{{ url_for('static', filename='js/dashboard.js') }}"></script>
+</body>
+</html>

@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>QRollCall — Register Student</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}" />
+</head>
+<body>
+
+  <nav>
+    <div class="brand">QRollCall</div>
+    <div>
+      <a href="/">Register</a>
+      <a href="/scanner">Scan Attendance</a>
+      <a href="/dashboard">Dashboard</a>
+    </div>
+  </nav>
+
+  <div class="container">
+    <h1>Register a Student</h1>
+    <p class="subtitle">Scan the student's school ID QR code to begin.</p>
+
+    <div class="card">
+      <div id="video-wrapper">
+        <video id="video" autoplay playsinline muted></video>
+        <div class="scan-frame"></div>
+      </div>
+      <canvas id="canvas" style="display:none;"></canvas>
+
+      <div style="text-align:center; margin-top:16px;">
+        <button class="btn-secondary" id="rescan-btn">Rescan QR Code</button>
+      </div>
+
+      <div id="scan-status" class="status-message"></div>
+    </div>
+
+    <div class="card" id="form-card" style="display:none;">
+      <h2 style="margin-top:0;">Student Details</h2>
+
+      <label for="student_id">Student ID</label>
+      <input type="text" id="student_id" name="student_id" readonly />
+
+      <label for="name">Full Name</label>
+      <input type="text" id="name" name="name" placeholder="Juan Dela Cruz" />
+
+      <label for="course">Course</label>
+      <input type="text" id="course" name="course" placeholder="BS Computer Science" />
+
+      <label for="year_level">Year Level</label>
+      <select id="year_level" name="year_level">
+        <option value="">Select year level</option>
+        <option value="1st Year">1st Year</option>
+        <option value="2nd Year">2nd Year</option>
+        <option value="3rd Year">3rd Year</option>
+        <option value="4th Year">4th Year</option>
+      </select>
+
+      <div style="margin-top:20px;">
+        <button class="btn-primary" id="register-btn">Register Student</button>
+      </div>
+
+      <div id="register-status" class="status-message"></div>
+    </div>
+  </div>
+
+  <script src="{{ url_for('static', filename='js/register.js') }}"></script>
+</body>
+</html>
